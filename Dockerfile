@@ -81,6 +81,8 @@ RUN set -x \
   && chmod 0755 /var/www/html/public \
   && chown ${USER}:${GROUP} /var/www/html/public
 
+RUN service apache2 restart
+
 VOLUME /var/www/html
 
 EXPOSE 80
