@@ -1,3 +1,9 @@
+###
+###             DOCKER LAMP STACK
+###             Start new project with full stack in few minutes
+###
+###
+
 FROM php:apache
 MAINTAINER "tigerwill90" <sylvain.muller90@gmail.com>
 
@@ -41,7 +47,7 @@ RUN set -x \
   && composer self-update
 
 ###
-### Fix permission
+### Init project and fix permission
 ###
 RUN set -x \
   && mkdir -p /var/www/html/public \
