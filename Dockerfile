@@ -11,7 +11,7 @@ ENV USER=daemon
 ENV GROUP=daemon
 
 ###
-### Install some needed tools
+### Install tools
 ###
 RUN set -x \
         && apt-get update \
@@ -20,23 +20,11 @@ RUN set -x \
                 make \
                 wget
 
-ADD /vhost/vhost.conf /etc/apache2/sites-available
-
-RUN set -x \
-      # disable default vhost conf && enable new vhost
-      && a2dissite 000-default.conf \
-      && a2ensite vhost.conf \
-      && a2enmod rewrite \
-      \
-      # clean-up
-      && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fetchDeps
-
 ###
 ### Install memcached
 ###
-RUN apt-get update \
+RUN set -x \
         && buildDeps=" \
-                git \
                 libmemcached-dev \
                 zlib1g-dev \
         " \
@@ -53,6 +41,8 @@ RUN apt-get update \
         \
         && docker-php-source delete \
         && apt-mark manual $doNotUninstall \
+        \
+        #clean-up
         && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps
 
 ###
@@ -68,6 +58,20 @@ RUN set -x \
 RUN set -x \
   && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
   && composer self-update
+
+###
+### Adding custom vhost conf
+###
+ADD /vhost/vhost.conf /etc/apache2/sites-available
+
+###
+### Override default vhost conf
+###
+RUN set -x \
+      # disable default vhost conf && enable custom vhost
+      && a2dissite 000-default.conf \
+      && a2ensite vhost.conf \
+      && a2enmod rewrite
 
 ###
 ### Init project and fix permission
