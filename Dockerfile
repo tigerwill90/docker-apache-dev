@@ -32,6 +32,19 @@ RUN set -x \
       && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fetchDeps
 
 ###
+### Install memcached
+###
+RUN set -x \
+    && apt-get install --no-install-recommends --no-install-suggests -y \
+      zlib1g-dev \
+      libmemcached-dev \
+    \
+    && git clone https://github.com/php-memcached-dev/php-memcached /usr/src/php/ext/memcached \
+    && cd /usr/src/php/ext/memcached && git checkout -b php7 origin/php7 \
+    && docker-php-ext-configure memcached \
+    && docker-php-ext-install memcached
+
+###
 ### Install PDO
 ###
 RUN set -x \
