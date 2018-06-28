@@ -34,15 +34,26 @@ RUN set -x \
 ###
 ### Install memcached
 ###
-RUN set -x \
-    && apt-get install --no-install-recommends --no-install-suggests -y \
-      zlib1g-dev \
-      libmemcached-dev \
-    \
-    && git clone https://github.com/php-memcached-dev/php-memcached /usr/src/php/ext/memcached \
-    && cd /usr/src/php/ext/memcached && git checkout -b php7 origin/php7 \
-    && docker-php-ext-configure memcached \
-    && docker-php-ext-install memcached
+RUN apt-get update \
+        && buildDeps=" \
+                git \
+                libmemcached-dev \
+                zlib1g-dev \
+        " \
+        && doNotUninstall=" \
+                libmemcached11 \
+                libmemcachedutil2 \
+        " \
+        && apt-get install -y $buildDeps --no-install-recommends \
+        && rm -r /var/lib/apt/lists/* \
+        \
+        && docker-php-source extract \
+        && git clone --branch php7 https://github.com/php-memcached-dev/php-memcached /usr/src/php/ext/memcached/ \
+        && docker-php-ext-install memcached \
+        \
+        && docker-php-source delete \
+        && apt-mark manual $doNotUninstall \
+        && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $buildDeps
 
 ###
 ### Install PDO
