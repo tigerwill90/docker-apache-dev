@@ -18,12 +18,11 @@ RUN set -x \
         && apt-get install --no-install-recommends --no-install-suggests -y \
                 git \
                 make \
-                wget \
-      \
-      # wget custom vhost file
-      && cd /etc/apache2/sites-available \
-      && wget https://raw.githubusercontent.com/tigerwill90/docker-apache-dev/0.x/vhost/vhost.conf \
-      \
+                wget
+
+ADD /vhost/vhost.conf /etc/apache2/sites-available
+
+RUN set -x \
       # disable default vhost conf && enable new vhost
       && a2dissite 000-default.conf \
       && a2ensite vhost.conf \
