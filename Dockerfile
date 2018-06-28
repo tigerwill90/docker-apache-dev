@@ -1,11 +1,8 @@
 FROM php:apache
 MAINTAINER "tigerwill90" <sylvain.muller90@gmail.com>
 
-
 ENV USER=daemon
 ENV GROUP=daemon
-
-VOLUME /var/www/html/public
 
 ###
 ### Install some needed tools
@@ -27,10 +24,7 @@ RUN set -x \
       && a2enmod rewrite \
       \
       # clean-up
-      && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fetchDeps \
-      \
-      # restart apache
-      && service apache2 restart
+      && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $fetchDeps
 
 ###
 ### Install PDO
@@ -50,8 +44,11 @@ RUN set -x \
 ### Fix permission
 ###
 RUN set -x \
-  && chmod 0755 /var/www/html \
-  && chown ${USER}:${GROUP} /var/www/html
+  && mkdir -p /var/www/html/public \
+  && chmod 0755 /var/www/html/public \
+  && chown ${USER}:${GROUP} /var/www/html/public
+
+VOLUME /var/www/html
 
 EXPOSE 80
 
