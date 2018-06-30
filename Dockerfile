@@ -55,6 +55,7 @@ RUN set -x \
 ###
 ### Install composer
 ###
+ENV COMPOSER_ALLOW_SUPERUSER=1
 RUN set -x \
   && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
   && composer self-update
