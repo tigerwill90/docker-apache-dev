@@ -80,9 +80,7 @@ RUN set -x \
 RUN set -x \
   && mkdir -p /var/www/html/public \
   && chmod 0755 /var/www/html/public \
-  && chown ${USER}:${GROUP} /var/www/html/public \
-  && chmod 777 /usr/local/bin/docker-entrypoint.sh \
-  && ln -s /usr/local/bin/docker-entrypoint.sh /
+  && chown ${USER}:${GROUP} /var/www/html/public
 
 RUN service apache2 restart
 
