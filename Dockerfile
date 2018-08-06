@@ -66,6 +66,18 @@ RUN set -x \
 ADD /vhost/vhost.conf /etc/apache2/sites-available
 
 ###
+### Generate certificat
+###
+RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/ssl-cert-snakeoil.key -out /etc/ssl/certs/ssl-cert-snakeoil.pem -subj "/C=AT/ST=Vienna/L=Vienna/O=Security/OU=Development/CN=example.com"
+
+###
+### Configure ssl 
+###
+RUN a2enmod rewrite
+RUN a2ensite default-ssl
+RUN a2enmod ssl
+
+###
 ### Override default vhost conf
 ###
 RUN set -x \
@@ -87,5 +99,6 @@ RUN service apache2 restart
 VOLUME /var/www/html
 
 EXPOSE 80
+EXPOSE 443
 
 WORKDIR /var/www/html
