@@ -21,12 +21,13 @@ RUN set -x \
                 wget
 
 ###
-### Install memcached
+### Install php extension
 ###
 RUN set -x \
         && buildDeps=" \
                 libmemcached-dev \
                 zlib1g-dev \
+                libgmp-dev \
         " \
         && doNotUninstall=" \
                 libmemcached11 \
@@ -38,6 +39,9 @@ RUN set -x \
         && docker-php-source extract \
         && git clone --branch php7 https://github.com/php-memcached-dev/php-memcached /usr/src/php/ext/memcached/ \
         && docker-php-ext-install memcached \
+        \
+        && ln /usr/include/x86_64-linux-gnu/gmp.h /usr/include/ \
+        && docker-php-ext-install gmp \
         \
         && docker-php-source delete \
         && apt-mark manual $doNotUninstall \
@@ -71,7 +75,7 @@ ADD /vhost/vhost.conf /etc/apache2/sites-available
 RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/ssl-cert-snakeoil.key -out /etc/ssl/certs/ssl-cert-snakeoil.pem -subj "/C=AT/ST=Vienna/L=Vienna/O=Security/OU=Development/CN=example.com"
 
 ###
-### Configure ssl 
+### Configure ssl
 ###
 RUN a2enmod rewrite
 RUN a2ensite default-ssl
